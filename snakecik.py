@@ -20,13 +20,13 @@ gameover = pyglet.text.Label(color=(255, 191, 0, 255), x=TILE_SIZE[0], y=3*TILE_
 
 class State:
     def __init__(self):
+        self.speed = 6
         self.snake = [(0, 0), (1, 0)]
         self.snake_direction = 0, 1
         self.width = 10
         self.height = 10
         self.counter = 0
         self.snake_alive = True
-        self.speed = 6
         self.food = []
         self.add_food()
         self.add_food()
@@ -75,16 +75,18 @@ class State:
             print(position)
             if (position not in self.snake) and (position not in self.food):
                 self.food.append(position)
-                # break
                 return
 
-    def speed(self):
+    def change_speed(self):
         if self.counter >= 3:
-            pyglet.clock._default._current_interval_item.interval = self.speed + 3
+            self.speed = self.speed + 3
+            pyglet.clock._default._current_interval_item.interval = self.speed
         elif self.counter >= 6:
-            pyglet.clock._default._current_interval_item.interval = self.speed + 6
-        else:
-            pyglet.clock._default._current_interval_item.interval = self.speed + 9
+            self.speed = self.speed + 6
+            pyglet.clock._default._current_interval_item.interval = self.speed
+        # else:
+        #     self.speed = self.speed + 9
+        #     pyglet.clock._default._current_interval_item.interval = self.speed
 
 
 snake_tiles = {}
@@ -129,7 +131,7 @@ def on_draw():
     for x, y in state.food:
         red_image.append(pyglet.sprite.Sprite(red, x * TILE_SIZE[0], y * TILE_SIZE[1], batch=batch))
     batch.draw()
-    label.text = (str(state.counter))    # update counter
+    label.text = (str(state.counter))
     label.draw()
     gameover.draw()
 
@@ -138,5 +140,5 @@ def move(dt):
     state.move()
 
 
-pyglet.clock.schedule_interval(move, 1/state.speed)
+pyglet.clock.schedule_interval(move, 1/state.change_speed)
 pyglet.app.run()
